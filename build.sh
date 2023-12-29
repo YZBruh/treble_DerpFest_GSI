@@ -2,10 +2,10 @@
 
 echo
 echo "--------------------------------------"
-echo "        DerpFest AOSP 14.0 Build    "
+echo "        DerpFest AOSP 14.0 Build      "
 echo "                 by                   "
-echo "                KoysX               "
-echo "        Origin author: ponces  "
+echo "               YZBruh                 "
+echo "        Origin author: KoysX & ponces "
 echo "--------------------------------------"
 echo
 
@@ -66,7 +66,16 @@ buildTrebleApp() {
     echo
 }
 
-buildVariant() {
+buildVariantARM() {
+    echo "--> Building treble_a64_bvN"
+    lunch treble_a64_bvN-userdebug
+    make -j$(nproc --all) installclean
+    make -j$(nproc --all) systemimage
+    mv $OUT/system.img $BD/system-treble_a64_bvN.img
+    echo
+}
+
+buildVariantARMplus() {
     echo "--> Building treble_arm64_bvN"
     lunch treble_arm64_bvN-userdebug
     make -j$(nproc --all) installclean
@@ -78,6 +87,7 @@ buildVariant() {
 generatePackages() {
     echo "--> Generating packages"
     buildDate="$(date +%Y%m%d)"
+    xz -cv $BD/system-treble_a64_bvN.img -T0 > $BD/DerpFest-a64-ab-14.0-unofficial-$buildDate.img.xz
     xz -cv $BD/system-treble_arm64_bvN.img -T0 > $BD/DerpFest-arm64-ab-14.0-unofficial-$buildDate.img.xz
     rm -rf $BD/system-*.img
     echo
@@ -90,7 +100,8 @@ syncRepos
 applyPatches
 setupEnv
 buildTrebleApp
-buildVariant
+buildVariantARM
+buildVariantARMplus
 generatePackages
 
 END=$(date +%s)
